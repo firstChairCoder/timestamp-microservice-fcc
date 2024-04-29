@@ -32,25 +32,29 @@ var listener = app.listen(process.env.PORT || 3000, function () {
 });
 
 let resObject = {};
-app.get("/api", function (req, res) {
+app.get("/api", function (_, res) {
   resObject["unix"] = new Date().getTime();
   resObject["utc"] = new Date().toUTCString();
   
+  //return date with unix and utc properties
   res.json(resObject)
 })
 
 app.get("/api/:input", function (req, res) {
   let input = req.params.input;
 
-  if (input.includes("-")) {
+  //checks if input string conforms to  date format
+  if (/[-\/\s]/.test(input)) {
     resObject["unix"] = new Date(input).getTime();
     resObject["utc"] = new Date(input).toUTCString();
   } else {
+    //convert to integer to format as timestamp
     input = parseInt(input);
     resObject["unix"] = new Date(input).getTime();
     resObject["utc"] = new Date(input).toUTCString();
   }
 
+  //invalid date format
   if (!resObject["unix"] || !resObject["utc"]) {
     res.json({error: "Invalid Date"})
   }
